@@ -1,17 +1,23 @@
 'use strict';
-
 import React, { Component } from 'react';
 import {
   StyleSheet,
+  Text,
   View,
+  Animated,
+  Easing
 } from 'react-native'
 
-const Game = require('./components/game/game.js');
+const BoardView = require('./boardview.js');
+const HeaderView = require('./headingBar.js');
+//has operators
+const operators = ['+', '-', '*', '/'];
 
-const Main = React.createClass({
+var Game = React.createClass({
   render() {
     return <View style={styles.container}>
-              <Game />
+              <HeaderView />
+              <BoardView />
            </View>;
   },
 });
@@ -23,4 +29,5 @@ var styles = StyleSheet.create({
   },
 });
 
-module.exports = Main;
+module.exports = Game;
+

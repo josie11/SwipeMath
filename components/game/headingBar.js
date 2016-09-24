@@ -4,68 +4,95 @@ import {
   StyleSheet,
   Text,
   View,
+  Animated,
+  Easing
 } from 'react-native'
-var {width, height} = require('Dimensions').get('window');
-var SIZE = 10; // four-by-four grid
-var CELL_SIZE = Math.floor(width * .1); // 20% of the screen width
-var CELL_PADDING = Math.floor(CELL_SIZE * .05); // 5% of the cell size
-var BORDER_RADIUS = CELL_PADDING * 10;
-var TILE_SIZE = CELL_SIZE - CELL_PADDING * 2;
-var LETTER_SIZE = Math.floor(TILE_SIZE * .70);
-var GOALNUMBER = 50;
 
-var Buttons = React.createClass({
+const {width, height} = require('Dimensions').get('window');
+
+const opButtonAmt = 4;
+const opButtonWidth = Math.floor(width * .2);
+const opButtonPadding = Math.floor(opButtonWidth * .1); // 5% of the cell size
+const opButtonRadius = opButtonPadding * 4;
+const opButtonSize = opButtonWidth - opButtonPadding * 2;
+const OpButtonLetterSize = Math.floor(opButtonWidth * .70);
+
+
+var HeaderView = React.createClass({
   render() {
     return <View style={styles.container}>
-             {this.renderTiles()}
-           </View>;
-  },
-  randNum(num) {
-    return Math.floor(Math.random() * GOALNUMBER) + 1;
-  },
-  renderTiles() {
-    var result = [];
-    for (var row = 0; row < SIZE; row++) {
-      for (var col = 0; col < SIZE; col++) {
-        var key = row * SIZE + col;
-        var letter = this.randNum(this.randNum());
-        var position = {
-          left: col * CELL_SIZE + CELL_PADDING,
-          top: row * CELL_SIZE + CELL_PADDING
-        };
-        result.push(
-          <View key={key} style={[styles.tile, position]}>
-            <Text style={styles.letter}>{letter}</Text>
+            <View style={styles.firstBox}>
+              <View style={styles.goalNum}>
+                <View style={styles.infoTitleBox}>
+                  <Text style={styles.infoButtonTitle}>Goal Number</Text>
+                </View>
+                <View style={styles.infoSmallBox}>
+                  <Text style={styles.infoButtonText}></Text>
+                </View>
+              </View>
+              <View style={styles.goalSwipes}>
+                <View style={styles.infoTitleBox}>
+                  <Text style={styles.infoButtonTitle}>Goal Swipes</Text>
+                </View>
+                <View style={styles.infoSmallBox}>
+                  <Text style={styles.infoButtonText}></Text>
+                </View>
+              </View>
+            </View>
+            <View style={styles.secondBox}>
+                <View style={styles.opButtons}><Text style={styles.opTile}>+</Text></View>
+                <View style={styles.opButtons}><Text style={styles.opTile}>-</Text></View>
+                <View style={styles.opButtons}><Text style={styles.opTile}>*</Text></View>
+               <View style={styles.opButtons}><Text style={styles.opTile}>/</Text></View>
+            </View>
           </View>
-        );
-      }
-    }
-    return result;
+  },
+  renderOpButton() {
   },
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
-    width: CELL_SIZE * SIZE,
-    height: CELL_SIZE * SIZE,
-    backgroundColor: 'transparent',
+    height: height * .3,
+    flexDirection: 'column',
   },
-  tile: {
-    position: 'absolute',
-    width: TILE_SIZE,
-    height: TILE_SIZE,
-    borderRadius: BORDER_RADIUS,
-    justifyContent: 'center',
+  firstBox: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  goalNum: {
+    width: width / 2
+  },
+  goalSwipes: {
+    width: width / 2
+  },
+
+  infoTitleBox: {
+  },
+  infoButtonTitle: {
+
+  },
+  infoSmallBox: {
+  },
+  infoButtonText: {
+
+  },
+  secondBox: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  opButtons: {
+    width: opButtonWidth,
+    height: opButtonWidth,
+    margin: opButtonPadding,
+    backgroundColor: '#c0dfd9',
+    borderRadius: opButtonRadius,
     alignItems: 'center',
-    backgroundColor: '#3b3a36',
+    justifyContent: 'center',
   },
-  letter: {
-    color: '#e9ece5',
-    fontSize: LETTER_SIZE,
-    backgroundColor: 'transparent',
+  opTile: {
+    fontSize: OpButtonLetterSize,
   },
 });
 
-module.exports = BoardView;
-
-//#c0dfd9 buttons
+module.exports = HeaderView;

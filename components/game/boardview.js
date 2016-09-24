@@ -7,9 +7,10 @@ import {
   Animated,
   Easing
 } from 'react-native'
+
 var {width, height} = require('Dimensions').get('window');
 var SIZE = 10; // four-by-four grid
-var CELL_SIZE = Math.floor(width * .1); // 20% of the screen width
+var CELL_SIZE = Math.floor(width * .1); //
 var CELL_PADDING = Math.floor(CELL_SIZE * .05); // 5% of the cell size
 var BORDER_RADIUS = CELL_PADDING * 10;
 var TILE_SIZE = CELL_SIZE - CELL_PADDING * 2;
@@ -26,8 +27,8 @@ var BoardView = React.createClass({
   },
   render() {
     return <View style={styles.container}>
-             {this.renderTiles()}
-           </View>;
+      {this.renderTiles()}
+    </View>;
   },
   renderTiles() {
     var result = [];
