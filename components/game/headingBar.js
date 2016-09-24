@@ -4,21 +4,15 @@ import {
   StyleSheet,
   Text,
   View,
-  Animated,
-  Easing
+  TouchableOpacity
 } from 'react-native'
+
+const OperatorButtons = require('./operatorButtons.js');
 
 const {width, height} = require('Dimensions').get('window');
 
-const opButtonAmt = 4;
-const opButtonWidth = Math.floor(width * .2);
-const opButtonPadding = Math.floor(opButtonWidth * .1); // 5% of the cell size
-const opButtonRadius = opButtonPadding * 4;
-const opButtonSize = opButtonWidth - opButtonPadding * 2;
-const OpButtonLetterSize = Math.floor(opButtonWidth * .70);
 
-
-var HeaderView = React.createClass({
+const HeaderView = React.createClass({
   render() {
     return <View style={styles.container}>
             <View style={styles.firstBox}>
@@ -27,7 +21,7 @@ var HeaderView = React.createClass({
                   <Text style={styles.infoButtonTitle}>Goal Number</Text>
                 </View>
                 <View style={styles.infoSmallBox}>
-                  <Text style={styles.infoButtonText}></Text>
+                  <Text style={styles.infoButtonText}>{this.props.gameProperties.goalNum}</Text>
                 </View>
               </View>
               <View style={styles.goalSwipes}>
@@ -35,19 +29,20 @@ var HeaderView = React.createClass({
                   <Text style={styles.infoButtonTitle}>Goal Swipes</Text>
                 </View>
                 <View style={styles.infoSmallBox}>
-                  <Text style={styles.infoButtonText}></Text>
+                  <Text style={styles.infoButtonText}>{this.props.gameProperties.goalSwipes}</Text>
+                </View>
+              </View>
+              <View style={styles.score}>
+                <View style={styles.infoTitleBox}>
+                  <Text style={styles.infoButtonTitle}>Score</Text>
+                </View>
+                <View style={styles.infoSmallBox}>
+                  <Text style={styles.infoButtonText}>{this.props.gameProperties.score}</Text>
                 </View>
               </View>
             </View>
-            <View style={styles.secondBox}>
-                <View style={styles.opButtons}><Text style={styles.opTile}>+</Text></View>
-                <View style={styles.opButtons}><Text style={styles.opTile}>-</Text></View>
-                <View style={styles.opButtons}><Text style={styles.opTile}>*</Text></View>
-               <View style={styles.opButtons}><Text style={styles.opTile}>/</Text></View>
-            </View>
+            <OperatorButtons operators={this.props.gameProperties.operators} style={styles.secondBox}/>
           </View>
-  },
-  renderOpButton() {
   },
 });
 
@@ -61,12 +56,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   goalNum: {
-    width: width / 2
+    width: width / 3
   },
   goalSwipes: {
-    width: width / 2
+    width: width / 3
   },
-
+  score: {
+    width: width / 3
+  },
   infoTitleBox: {
   },
   infoButtonTitle: {
@@ -78,20 +75,7 @@ const styles = StyleSheet.create({
 
   },
   secondBox: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  opButtons: {
-    width: opButtonWidth,
-    height: opButtonWidth,
-    margin: opButtonPadding,
-    backgroundColor: '#c0dfd9',
-    borderRadius: opButtonRadius,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  opTile: {
-    fontSize: OpButtonLetterSize,
+    flex: 2,
   },
 });
 

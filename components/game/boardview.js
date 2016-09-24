@@ -15,7 +15,6 @@ var CELL_PADDING = Math.floor(CELL_SIZE * .05); // 5% of the cell size
 var BORDER_RADIUS = CELL_PADDING * 10;
 var TILE_SIZE = CELL_SIZE - CELL_PADDING * 2;
 var LETTER_SIZE = Math.floor(TILE_SIZE * .70);
-var GOALNUMBER = 50;
 
 var BoardView = React.createClass({
   getInitialState() {
@@ -58,7 +57,7 @@ var BoardView = React.createClass({
          </Animated.View>;
   },
  randNum(num) {
-    return Math.floor(Math.random() * GOALNUMBER) + 1;
+    return Math.floor(Math.random() * this.props.gameProperties.goalNum) + 1;
   },
   clickTile(id) {
     var tilt = this.state.tilt[id];

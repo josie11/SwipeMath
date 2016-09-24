@@ -10,14 +10,23 @@ import {
 
 const BoardView = require('./boardview.js');
 const HeaderView = require('./headingBar.js');
-//has operators
-const operators = ['+', '-', '*', '/'];
 
 var Game = React.createClass({
+  getInitialState() {
+    let gameProperties = {
+      goalNum: 15,
+      goalSwipes: 2,
+      score: 0,
+      operators: ['+', '-', '*', '/'],
+      opValues: {'+' : 2, '-' : 2, '*' : 4, '/' : 4
+      }
+    };
+    return {gameProperties};
+  },
   render() {
     return <View style={styles.container}>
-              <HeaderView />
-              <BoardView />
+              <HeaderView gameProperties={this.state.gameProperties}/>
+              <BoardView gameProperties={this.state.gameProperties} />
            </View>;
   },
 });
