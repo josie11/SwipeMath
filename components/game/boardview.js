@@ -7,7 +7,10 @@ import {
   Animated,
   Easing,
   PanResponder
-} from 'react-native'
+} from 'react-native';
+
+import classnames from 'classnames';
+
 
 var {width, height} = require('Dimensions').get('window');
 var SIZE = 10; // four-by-four grid
@@ -25,13 +28,11 @@ var BoardView = React.createClass({
       tilt[i] = new Animated.Value(0);
       tileData[i] = {
         value : this.randNum(this.randNum()),
-        swipeCount : 0,
-        swipeHistoryValue : 0,
-        operatorHistory : {},
-        previousTiles : []
+        swipeCountValue : 0,
+        active: false
       }
     }
-    return {tilt, tileData, currentSwipeCount: 0, currentSwipeIds: []};
+    return {tilt, tileData, currentSwipeIds: []};
   },
   render() {
     return <View style={styles.container}>
@@ -59,30 +60,119 @@ var BoardView = React.createClass({
     return result;
   },
   renderTile(id, style) {
-    return <Animated.View key={id} style={[styles.tile, style]}
+    let tileColor = this.tileStateStlye(id);
+    return <Animated.View key={id} style={[styles.tile, style, tileColor]}
                  onStartShouldSetResponder={() => this.clickTile(id)}>
            <Text style={styles.number} >{this.getTileValue(id)}</Text>
          </Animated.View>;
   },
 
- randNum(num) {
+ randNum() {
     return Math.floor(Math.random() * this.props.gameProperties.goalNum);
   },
 
   clickTile(id) {
     this.spinTile(id);
+    this.executeSwipe(id);
     this.setState({tileData : this.state.tileData});
   },
 
-  mergeTiles(mergeId, mergeeId) {
+  //if first move, just addtoboard
+  //else initiate tile merge
+  executeSwipe(id) {
+    if(this.boardSwipeCount() === 0) {
+      this.changeActiveTile(id);
+      this.addBoardSwipeId(id);
+    } else if(this.lastSwipedTileId() !== id) {
+      this.changeActiveTile(id);
+      this.startTileMerge(id);
+    }
+  },
 
+  //check if valid merge via location
+  //yes: merge
+  //no: trigger swipe count refresh
+  startTileMerge(id) {
+    if(this.isTileNeighbor(id)) {
+      this.tileMerge(id);
+      this.addBoardSwipeId(id);
+      this.checkBoardSwipeCount();
+      this.setState({tileData : this.state.tileData});
+    } else {
+      this.addBoardSwipeId(id);
+      this.refreshBoardSwipe();
+    }
+  },
+
+  //combine swipe counts of tiles
+  tileMerge(id) {
+    let lastSwipedId = this.lastSwipedTileId(), operator = this.props.gameProperties.currentOperator;
+    let val1 = this.getTileValue(lastSwipedId), val2 = this.getTileValue(id);
+    let newTileValue = this.doMath(val1, operator, val2);
+    let newSwipeCount = this.getTileSwipeCount(id) + this.getTileSwipeCount(lastSwipedId) + 1;
+    this.updateTile(id, newTileValue, newSwipeCount);
+    this.resetTile(lastSwipedId);
+  },
+
+  doMath(val1, op, val2) {
+    let operators = {
+      '+': function(num1, num2) { return num1 + num2; },
+      '-': function(num1, num2) { return num1 - num2; },
+      '/': function(num1, num2) { return num1 / num2; },
+      '*': function(num1, num2) { return num1 * num2; }
+    }
+    return Math.floor(operators[op](val2, val1));
+  },
+
+  //swipecount to zero, new tile
+  updateTile(id, value, swipeCount) {
+    this.state.tileData[id].value = value;
+    this.state.tileData[id].swipecountValue = swipeCount;
+  },
+  resetTile(id) {
+    this.state.tileData[id].value = this.randNum(this.randNum());
+    this.state.tileData[id].swipecountValue = 0;
+    this.state.tileData[id].active = false;
+  },
+  //check if board swipes === goal swipes
+  //check if board swipes exceeds goal swipes
+  //triggers update, with last id as first id
+  checkBoardSwipeCount() {
+    let boardSwipeCount = this.boardSwipeCount() - 1;
+    let goalSwipes = this.props.gameProperties.goalSwipes;
+    if(boardSwipeCount === goalSwipes) this.checkForGoalNum();
+  },
+
+  checkForGoalNum() {
+    let lastSwipedId = this.lastSwipedTileId();
+    let value = this.getTileValue(lastSwipedId);
+    if(value === this.props.gameProperties.goalNum) {
+      this.props.changeScore(this.getTileSwipeCount(lastSwipedId));
+      this.resetTile(lastSwipedId);
+      this.refreshBoardSwipe(true);
+    } else {
+      this.refreshBoardSwipe(false);
+      this.updateTile(lastSwipedId, this.getTileValue(lastSwipedId), 0);
+    }
+  },
+
+  refreshBoardSwipe(opt) {
+    if(opt) {
+      this.state.currentSwipeIds = [];
+    } else {
+      this.state.currentSwipeIds = [this.lastSwipedTileId()];
+    }
   },
 
   //does the last swiped tile include current swiped tile as a neighbor
   isTileNeighbor(id) {
-    let lastSwipedTileId = this.state.currentSwipeIds[-1];
-    return neighborTiles(lastSwipedTileId).includes(id);
-  }
+    let lastSwipedTileId = this.lastSwipedTileId();
+    return this.neighborTiles(lastSwipedTileId).includes(id);
+  },
+
+  lastSwipedTileId() {
+    return this.state.currentSwipeIds[this.state.currentSwipeIds.length - 1];
+  },
 
   //get all neighbor tiles
   neighborTiles(id) {
@@ -91,10 +181,23 @@ var BoardView = React.createClass({
     });
   },
 
+  addBoardSwipeId(id) {
+    this.state.currentSwipeIds.push(id);
+  },
+
   getTileValue(id) {
     return this.state.tileData[id].value;
   },
 
+  getTileSwipeCount(id) {
+    return this.state.tileData[id].swipeCountValue;
+  },
+
+  boardSwipeCount() {
+    return this.state.currentSwipeIds.length;
+  },
+
+  //does spin animation
   spinTile(id) {
     let tilt = this.state.tilt[id];
     tilt.setValue(1); // mapped to -30 degrees
@@ -104,7 +207,15 @@ var BoardView = React.createClass({
       easing: Easing.quad // quadratic easing function: (t) => t * t
     }).start();
   },
-
+  changeActiveTile(id) {
+    let lastSwipedId = this.lastSwipedTileId();
+    if(lastSwipedId) this.state.tileData[lastSwipedId].active = !this.state.tileData[lastSwipedId].active;
+    this.state.tileData[id].active = !this.state.tileData[id].active;
+  },
+  tileStateStlye(id) {
+    let color = this.state.tileData[id].active ? 'red' : '#517664';
+    return {backgroundColor : color};
+  }
 });
 
 var styles = StyleSheet.create({
@@ -121,7 +232,6 @@ var styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#517664',
   },
   number: {
     color: '#D6E5E3',

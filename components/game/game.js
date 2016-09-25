@@ -27,14 +27,17 @@ var Game = React.createClass({
   render() {
     return <View style={styles.container}>
               <HeaderView gameProperties={this.state.gameProperties} changeOperator={this.changeOperator}/>
-              <BoardView gameProperties={this.state.gameProperties} />
+              <BoardView gameProperties={this.state.gameProperties} changeScore={this.changeScore} />
            </View>;
   },
   changeOperator(op) {
     this.state.gameProperties.currentOperator = op;
   },
   changeScore(points) {
+    console.log(points);
     this.state.gameProperties.score += points;
+    console.log(this.state.gameProperties.score)
+    this.setState({gameProperties: this.state.gameProperties});
   },
 });
 
