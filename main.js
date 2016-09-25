@@ -6,21 +6,19 @@ import {
   View,
 } from 'react-native'
 
-var BoardView = require('./components/game/boardview.js');
+const Game = require('./components/game/game.js');
 
-var Main = React.createClass({
+const Main = React.createClass({
   render() {
     return <View style={styles.container}>
-             <BoardView/>
+              <Game />
            </View>;
   },
 });
 
 var styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: 'column',
     backgroundColor: '#CACFD6',
   },
 });

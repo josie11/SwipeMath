@@ -3,69 +3,51 @@ import React, { Component } from 'react';
 import {
   StyleSheet,
   Text,
-  View,
+  View
 } from 'react-native'
-var {width, height} = require('Dimensions').get('window');
-var SIZE = 10; // four-by-four grid
-var CELL_SIZE = Math.floor(width * .1); // 20% of the screen width
-var CELL_PADDING = Math.floor(CELL_SIZE * .05); // 5% of the cell size
-var BORDER_RADIUS = CELL_PADDING * 10;
-var TILE_SIZE = CELL_SIZE - CELL_PADDING * 2;
-var LETTER_SIZE = Math.floor(TILE_SIZE * .70);
-var GOALNUMBER = 50;
 
-var Buttons = React.createClass({
+const OperatorButtons = require('./operatorButtons.js');
+const InfoButton = require('./gameInfoButton.js');
+const AdjustButton = require('./adjusterBar.js');
+const {width, height} = require('Dimensions').get('window');
+
+const HeaderView = React.createClass({
   render() {
     return <View style={styles.container}>
-             {this.renderTiles()}
-           </View>;
-  },
-  randNum(num) {
-    return Math.floor(Math.random() * GOALNUMBER) + 1;
-  },
-  renderTiles() {
-    var result = [];
-    for (var row = 0; row < SIZE; row++) {
-      for (var col = 0; col < SIZE; col++) {
-        var key = row * SIZE + col;
-        var letter = this.randNum(this.randNum());
-        var position = {
-          left: col * CELL_SIZE + CELL_PADDING,
-          top: row * CELL_SIZE + CELL_PADDING
-        };
-        result.push(
-          <View key={key} style={[styles.tile, position]}>
-            <Text style={styles.letter}>{letter}</Text>
+            <View style={styles.firstBox}>
+              <View style={styles.adjustbox}>
+                <InfoButton info={this.props.gameProperties.goalNum} title="Goal Number" />
+                <AdjustButton changeGoal={this.props.changeGoalNum} />
+              </View >
+              <View style={styles.adjustbox}>
+                <InfoButton info={this.props.gameProperties.goalSwipes} title="Goal Swipes" />
+                <AdjustButton changeGoal={this.props.changeGoalSwipes} />
+              </View>
+              <InfoButton style={styles.score} info={this.props.gameProperties.score} title="Score" />
+            </View>
+            <OperatorButtons operators={this.props.gameProperties.operators} style={styles.secondBox} changeOperator={this.props.changeOperator} currOp={this.props.gameProperties.currentOperator} />
           </View>
-        );
-      }
-    }
-    return result;
   },
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
-    width: CELL_SIZE * SIZE,
-    height: CELL_SIZE * SIZE,
-    backgroundColor: 'transparent',
+    height: height * .30,
+    flexDirection: 'column',
   },
-  tile: {
-    position: 'absolute',
-    width: TILE_SIZE,
-    height: TILE_SIZE,
-    borderRadius: BORDER_RADIUS,
-    justifyContent: 'center',
+  firstBox: {
+    flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#3b3a36',
+    justifyContent: 'center',
+    backgroundColor: '#c0dfd9',
   },
-  letter: {
-    color: '#e9ece5',
-    fontSize: LETTER_SIZE,
-    backgroundColor: 'transparent',
+  secondBox: {
+    flex: 1,
+  },
+  adjustbox: {
+    flexDirection: 'column'
   },
 });
 
-module.exports = BoardView;
-
-//#c0dfd9 buttons
+module.exports = HeaderView;
