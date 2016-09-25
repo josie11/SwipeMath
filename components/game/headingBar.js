@@ -8,24 +8,31 @@ import {
 
 const OperatorButtons = require('./operatorButtons.js');
 const InfoButton = require('./gameInfoButton.js');
+const AdjustButton = require('./adjusterBar.js');
 const {width, height} = require('Dimensions').get('window');
 
 const HeaderView = React.createClass({
   render() {
     return <View style={styles.container}>
             <View style={styles.firstBox}>
-              <InfoButton info={this.props.gameProperties.goalNum} title="Goal Number" />
-              <InfoButton info={this.props.gameProperties.goalSwipes} title="Goal Swipes" />
-              <InfoButton style={styles.score}info={this.props.gameProperties.score} title="Score" />
+              <View style={styles.adjustbox}>
+                <InfoButton info={this.props.gameProperties.goalNum} title="Goal Number" />
+                <AdjustButton changeGoal={this.props.changeGoalNum} />
+              </View >
+              <View style={styles.adjustbox}>
+                <InfoButton info={this.props.gameProperties.goalSwipes} title="Goal Swipes" />
+                <AdjustButton changeGoal={this.props.changeGoalSwipes} />
+              </View>
+              <InfoButton style={styles.score} info={this.props.gameProperties.score} title="Score" />
             </View>
-            <OperatorButtons operators={this.props.gameProperties.operators} style={styles.secondBox} changeOperator={this.props.changeOperator}/>
+            <OperatorButtons operators={this.props.gameProperties.operators} style={styles.secondBox} changeOperator={this.props.changeOperator} currOp={this.props.gameProperties.currentOperator} />
           </View>
   },
 });
 
 const styles = StyleSheet.create({
   container: {
-    height: height * .25,
+    height: height * .30,
     flexDirection: 'column',
   },
   firstBox: {
@@ -37,6 +44,9 @@ const styles = StyleSheet.create({
   },
   secondBox: {
     flex: 1,
+  },
+  adjustbox: {
+    flexDirection: 'column'
   },
 });
 

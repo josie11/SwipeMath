@@ -61,9 +61,9 @@ const styles = StyleSheet.create({
     width: opButtonWidth,
     height: opButtonWidth,
     margin: opButtonPadding,
-    backgroundColor: '#517664',
     borderRadius: opButtonRadius,
     alignItems: 'center',
+    backgroundColor: '#517664'
   },
   opTile: {
     fontSize: OpButtonLetterSize,

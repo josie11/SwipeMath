@@ -27,7 +27,7 @@ var BoardView = React.createClass({
     for (var i = 0; i < tilt.length; i++) {
       tilt[i] = new Animated.Value(0);
       tileData[i] = {
-        value : this.randNum(this.randNum()),
+        value : this.randNum(),
         swipeCountValue : 0,
         active: false
       }
@@ -68,7 +68,7 @@ var BoardView = React.createClass({
   },
 
  randNum() {
-    return Math.floor(Math.random() * this.props.gameProperties.goalNum);
+    return Math.floor(Math.random() * this.props.gameProperties.goalNum) + 1;
   },
 
   clickTile(id) {
@@ -86,6 +86,8 @@ var BoardView = React.createClass({
     } else if(this.lastSwipedTileId() !== id) {
       this.changeActiveTile(id);
       this.startTileMerge(id);
+    } else {
+      this.refreshBoardSwipe(true);
     }
   },
 
@@ -109,7 +111,7 @@ var BoardView = React.createClass({
     let lastSwipedId = this.lastSwipedTileId(), operator = this.props.gameProperties.currentOperator;
     let val1 = this.getTileValue(lastSwipedId), val2 = this.getTileValue(id);
     let newTileValue = this.doMath(val1, operator, val2);
-    let newSwipeCount = this.getTileSwipeCount(id) + this.getTileSwipeCount(lastSwipedId) + 1;
+    let newSwipeCount = this.getTileSwipeCount(lastSwipedId) + 1;
     this.updateTile(id, newTileValue, newSwipeCount);
     this.resetTile(lastSwipedId);
   },
@@ -121,18 +123,17 @@ var BoardView = React.createClass({
       '/': function(num1, num2) { return num1 / num2; },
       '*': function(num1, num2) { return num1 * num2; }
     }
-    return Math.floor(operators[op](val2, val1));
+    return Math.abs(Math.floor(operators[op](val2, val1)));
   },
 
   //swipecount to zero, new tile
   updateTile(id, value, swipeCount) {
     this.state.tileData[id].value = value;
-    this.state.tileData[id].swipecountValue = swipeCount;
+    this.state.tileData[id].swipeCountValue += swipeCount;
   },
   resetTile(id) {
     this.state.tileData[id].value = this.randNum(this.randNum());
     this.state.tileData[id].swipecountValue = 0;
-    this.state.tileData[id].active = false;
   },
   //check if board swipes === goal swipes
   //check if board swipes exceeds goal swipes
@@ -158,6 +159,7 @@ var BoardView = React.createClass({
 
   refreshBoardSwipe(opt) {
     if(opt) {
+      this.changeActiveTile();
       this.state.currentSwipeIds = [];
     } else {
       this.state.currentSwipeIds = [this.lastSwipedTileId()];
@@ -210,7 +212,7 @@ var BoardView = React.createClass({
   changeActiveTile(id) {
     let lastSwipedId = this.lastSwipedTileId();
     if(lastSwipedId) this.state.tileData[lastSwipedId].active = !this.state.tileData[lastSwipedId].active;
-    this.state.tileData[id].active = !this.state.tileData[id].active;
+    if(id) this.state.tileData[id].active = !this.state.tileData[id].active;
   },
   tileStateStlye(id) {
     let color = this.state.tileData[id].active ? 'red' : '#517664';

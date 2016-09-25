@@ -26,7 +26,7 @@ var Game = React.createClass({
   },
   render() {
     return <View style={styles.container}>
-              <HeaderView gameProperties={this.state.gameProperties} changeOperator={this.changeOperator}/>
+              <HeaderView gameProperties={this.state.gameProperties} changeOperator={this.changeOperator} changeGoalNum={this.changeGoalNum} changeGoalSwipes={this.changeGoalSwipes} />
               <BoardView gameProperties={this.state.gameProperties} changeScore={this.changeScore} />
            </View>;
   },
@@ -34,11 +34,22 @@ var Game = React.createClass({
     this.state.gameProperties.currentOperator = op;
   },
   changeScore(points) {
-    console.log(points);
     this.state.gameProperties.score += points;
-    console.log(this.state.gameProperties.score)
-    this.setState({gameProperties: this.state.gameProperties});
+    this.changeState();
   },
+  changeGoalNum(num) {
+    let newNum = this.state.gameProperties.goalNum + num;
+    this.state.gameProperties.goalNum = newNum < 1 ? 1 : newNum;
+    this.changeState();
+  },
+  changeGoalSwipes(num) {
+    let newNum = this.state.gameProperties.goalSwipes + num;
+    this.state.gameProperties.goalSwipes = newNum < 1 ? 1 : newNum;
+    this.changeState();
+  },
+  changeState() {
+    this.setState({gameProperties: this.state.gameProperties});
+  }
 });
 
 var styles = StyleSheet.create({

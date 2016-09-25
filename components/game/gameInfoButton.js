@@ -51,6 +51,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   infoSmallBox: {
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
