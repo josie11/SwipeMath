@@ -68,7 +68,7 @@ var BoardView = React.createClass({
   },
 
  randNum() {
-    return Math.floor(Math.random() * this.props.gameProperties.goalNum) + 1;
+    return Math.floor(Math.random() * this.props.gameProperties.goalNum - 1) + 1;
   },
 
   clickTile(id) {
