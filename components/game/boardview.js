@@ -5,7 +5,8 @@ import {
   Text,
   View,
   Animated,
-  Easing
+  Easing,
+  PanResponder
 } from 'react-native'
 
 var {width, height} = require('Dimensions').get('window');
@@ -18,11 +19,19 @@ var LETTER_SIZE = Math.floor(TILE_SIZE * .70);
 
 var BoardView = React.createClass({
   getInitialState() {
-    var tilt = new Array(SIZE * SIZE);
+    let tilt = new Array(SIZE * SIZE);
+    let tileData = new Array(SIZE * SIZE);
     for (var i = 0; i < tilt.length; i++) {
       tilt[i] = new Animated.Value(0);
+      tileData[i] = {
+        value : this.randNum(this.randNum()),
+        swipeCount : 0,
+        swipeHistoryValue : 0,
+        operatorHistory : {},
+        previousTiles : []
+      }
     }
-    return {tilt};
+    return {tilt, tileData, currentSwipeCount: 0, currentSwipeIds: []};
   },
   render() {
     return <View style={styles.container}>
@@ -34,7 +43,6 @@ var BoardView = React.createClass({
     for (var row = 0; row < SIZE; row++) {
       for (var col = 0; col < SIZE; col++) {
         var key = row * SIZE + col;
-        var number = this.randNum(this.randNum());
         var tilt = this.state.tilt[key].interpolate({
           inputRange: [0, 1],
           outputRange: ['0deg', '360deg']
@@ -45,22 +53,50 @@ var BoardView = React.createClass({
           transform: [{perspective: CELL_SIZE * 8},
                       {rotateZ: tilt}],
         };
-        result.push(this.renderTile(key, style, number));
+        result.push(this.renderTile(key, style));
       }
     }
     return result;
   },
-  renderTile(id, style, number) {
+  renderTile(id, style) {
     return <Animated.View key={id} style={[styles.tile, style]}
                  onStartShouldSetResponder={() => this.clickTile(id)}>
-           <Text style={styles.number}>{number}</Text>
+           <Text style={styles.number} >{this.getTileValue(id)}</Text>
          </Animated.View>;
   },
+
  randNum(num) {
-    return Math.floor(Math.random() * this.props.gameProperties.goalNum) + 1;
+    return Math.floor(Math.random() * this.props.gameProperties.goalNum);
   },
+
   clickTile(id) {
-    var tilt = this.state.tilt[id];
+    this.spinTile(id);
+    this.setState({tileData : this.state.tileData});
+  },
+
+  mergeTiles(mergeId, mergeeId) {
+
+  },
+
+  //does the last swiped tile include current swiped tile as a neighbor
+  isTileNeighbor(id) {
+    let lastSwipedTileId = this.state.currentSwipeIds[-1];
+    return neighborTiles(lastSwipedTileId).includes(id);
+  }
+
+  //get all neighbor tiles
+  neighborTiles(id) {
+    return [id - 10, id + 10, id - 1, id + 1].filter(function(value) {
+      if(value >= 0) return value;
+    });
+  },
+
+  getTileValue(id) {
+    return this.state.tileData[id].value;
+  },
+
+  spinTile(id) {
+    let tilt = this.state.tilt[id];
     tilt.setValue(1); // mapped to -30 degrees
     Animated.timing(tilt, {
       toValue: 0, // mapped to 0 degrees (no tilt)
@@ -68,6 +104,7 @@ var BoardView = React.createClass({
       easing: Easing.quad // quadratic easing function: (t) => t * t
     }).start();
   },
+
 });
 
 var styles = StyleSheet.create({

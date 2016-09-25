@@ -19,15 +19,22 @@ var Game = React.createClass({
       score: 0,
       operators: ['+', '-', '*', '/'],
       opValues: {'+' : 2, '-' : 2, '*' : 4, '/' : 4
-      }
+      },
+      currentOperator: '+'
     };
     return {gameProperties};
   },
   render() {
     return <View style={styles.container}>
-              <HeaderView gameProperties={this.state.gameProperties}/>
+              <HeaderView gameProperties={this.state.gameProperties} changeOperator={this.changeOperator}/>
               <BoardView gameProperties={this.state.gameProperties} />
            </View>;
+  },
+  changeOperator(op) {
+    this.state.gameProperties.currentOperator = op;
+  },
+  changeScore(points) {
+    this.state.gameProperties.score += points;
   },
 });
 

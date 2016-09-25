@@ -3,79 +3,40 @@ import React, { Component } from 'react';
 import {
   StyleSheet,
   Text,
-  View,
-  TouchableOpacity
+  View
 } from 'react-native'
 
 const OperatorButtons = require('./operatorButtons.js');
-
+const InfoButton = require('./gameInfoButton.js');
 const {width, height} = require('Dimensions').get('window');
-
 
 const HeaderView = React.createClass({
   render() {
     return <View style={styles.container}>
             <View style={styles.firstBox}>
-              <View style={styles.goalNum}>
-                <View style={styles.infoTitleBox}>
-                  <Text style={styles.infoButtonTitle}>Goal Number</Text>
-                </View>
-                <View style={styles.infoSmallBox}>
-                  <Text style={styles.infoButtonText}>{this.props.gameProperties.goalNum}</Text>
-                </View>
-              </View>
-              <View style={styles.goalSwipes}>
-                <View style={styles.infoTitleBox}>
-                  <Text style={styles.infoButtonTitle}>Goal Swipes</Text>
-                </View>
-                <View style={styles.infoSmallBox}>
-                  <Text style={styles.infoButtonText}>{this.props.gameProperties.goalSwipes}</Text>
-                </View>
-              </View>
-              <View style={styles.score}>
-                <View style={styles.infoTitleBox}>
-                  <Text style={styles.infoButtonTitle}>Score</Text>
-                </View>
-                <View style={styles.infoSmallBox}>
-                  <Text style={styles.infoButtonText}>{this.props.gameProperties.score}</Text>
-                </View>
-              </View>
+              <InfoButton info={this.props.gameProperties.goalNum} title="Goal Number" />
+              <InfoButton info={this.props.gameProperties.goalSwipes} title="Goal Swipes" />
+              <InfoButton style={styles.score}info={this.props.gameProperties.score} title="Score" />
             </View>
-            <OperatorButtons operators={this.props.gameProperties.operators} style={styles.secondBox}/>
+            <OperatorButtons operators={this.props.gameProperties.operators} style={styles.secondBox} changeOperator={this.props.changeOperator}/>
           </View>
   },
 });
 
 const styles = StyleSheet.create({
   container: {
-    height: height * .3,
+    height: height * .25,
     flexDirection: 'column',
   },
   firstBox: {
     flex: 1,
     flexDirection: 'row',
-  },
-  goalNum: {
-    width: width / 3
-  },
-  goalSwipes: {
-    width: width / 3
-  },
-  score: {
-    width: width / 3
-  },
-  infoTitleBox: {
-  },
-  infoButtonTitle: {
-
-  },
-  infoSmallBox: {
-  },
-  infoButtonText: {
-
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#c0dfd9',
   },
   secondBox: {
-    flex: 2,
+    flex: 1,
   },
 });
 
