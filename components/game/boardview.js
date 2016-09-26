@@ -28,12 +28,13 @@ var BoardView = React.createClass({
     return {tilt, tileData, currentSwipeIds: [], resetOpacity};
   },
   render() {
+    let opacity = {opacity: this.state.resetOpacity};
     return (
     <View style={styles.container}>
       <View style={styles.container}>
         {this.renderTiles()}
       </View>
-      <Animated.View style={styles.reset}
+      <Animated.View style={[styles.reset, opacity]}
           onStartShouldSetResponder={() => this.clickReset()}>
         <Text style={styles.number}>Reset</Text>
       </Animated.View>
@@ -242,6 +243,7 @@ var BoardView = React.createClass({
     return {backgroundColor : color};
   },
   animateReset() {
+    console.log(this.state.resetOpacity)
     let opacity = this.state.resetOpacity;
     opacity.setValue(.5); // half transparent, half opaque
     Animated.timing(opacity, {
