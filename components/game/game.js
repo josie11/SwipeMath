@@ -11,7 +11,7 @@ import {
 const BoardView = require('./boardview.js');
 const HeaderView = require('./headingBar.js');
 
-var Game = React.createClass({
+const Game = React.createClass({
   getInitialState() {
     let gameProperties = {
       goalNum: 15,
@@ -27,7 +27,7 @@ var Game = React.createClass({
   render() {
     return <View style={styles.container}>
               <HeaderView gameProperties={this.state.gameProperties} changeOperator={this.changeOperator} changeGoalNum={this.changeGoalNum} changeGoalSwipes={this.changeGoalSwipes} />
-              <BoardView gameProperties={this.state.gameProperties} changeScore={this.changeScore} />
+              <BoardView newGame={this.newGame} gameProperties={this.state.gameProperties} changeScore={this.changeScore} />
            </View>;
   },
   changeOperator(op) {
@@ -47,9 +47,16 @@ var Game = React.createClass({
     this.state.gameProperties.goalSwipes = newNum < 1 ? 1 : newNum;
     this.changeState();
   },
+  newGame() {
+    this.state.gameProperties.goalNum = 15;
+    this.state.gameProperties.goalSwipes = 2;
+    this.state.gameProperties.score = 0;
+    this.state.gameProperties.currentOperator = '+';
+    this.changeState();
+  },
   changeState() {
     this.setState({gameProperties: this.state.gameProperties});
-  }
+  },
 });
 
 var styles = StyleSheet.create({

@@ -9,9 +9,6 @@ import {
   PanResponder
 } from 'react-native';
 
-import classnames from 'classnames';
-
-
 var {width, height} = require('Dimensions').get('window');
 var SIZE = 10; // four-by-four grid
 var CELL_SIZE = Math.floor(width * .1); //
@@ -23,21 +20,25 @@ var LETTER_SIZE = Math.floor(TILE_SIZE * .70);
 var BoardView = React.createClass({
   getInitialState() {
     let tilt = new Array(SIZE * SIZE);
-    let tileData = new Array(SIZE * SIZE);
+    let tileData = this.renderTileData();
+    let resetOpacity = new Animated.Value(1);
     for (var i = 0; i < tilt.length; i++) {
       tilt[i] = new Animated.Value(0);
-      tileData[i] = {
-        value : this.randNum(),
-        swipeCountValue : 0,
-        active: false
-      }
     }
-    return {tilt, tileData, currentSwipeIds: []};
+    return {tilt, tileData, currentSwipeIds: [], resetOpacity};
   },
   render() {
-    return <View style={styles.container}>
-      {this.renderTiles()}
-    </View>;
+    return (
+    <View style={styles.container}>
+      <View style={styles.container}>
+        {this.renderTiles()}
+      </View>
+      <Animated.View style={styles.reset}
+          onStartShouldSetResponder={() => this.clickReset()}>
+        <Text style={styles.number}>Reset</Text>
+      </Animated.View>
+    </View>
+    )
   },
   renderTiles() {
     var result = [];
@@ -66,9 +67,20 @@ var BoardView = React.createClass({
            <Text style={styles.number} >{this.getTileValue(id)}</Text>
          </Animated.View>;
   },
+  renderTileData() {
+    let tileData = new Array(SIZE * SIZE);
+    for (var i = 0; i < tileData.length; i++) {
+      tileData[i] = {
+        value : this.randNum(),
+        swipeCountValue : 0,
+        active: false
+      }
+    };
+    return tileData;
+  },
 
  randNum() {
-    return Math.floor(Math.random() * this.props.gameProperties.goalNum - 1) + 1;
+    return Math.floor(Math.random() * (this.props.gameProperties.goalNum - 1)) + 1;
   },
 
   clickTile(id) {
@@ -166,6 +178,17 @@ var BoardView = React.createClass({
     }
   },
 
+  clickReset() {
+    let newTileData = this.renderTileData();
+    this.animateReset();
+    this.refreshBoardSwipe(true);
+    this.props.newGame();
+    this.setState({tileData: newTileData});
+  },
+
+  newBoard() {
+
+  },
   //does the last swiped tile include current swiped tile as a neighbor
   isTileNeighbor(id) {
     let lastSwipedTileId = this.lastSwipedTileId();
@@ -217,7 +240,15 @@ var BoardView = React.createClass({
   tileStateStlye(id) {
     let color = this.state.tileData[id].active ? 'red' : '#517664';
     return {backgroundColor : color};
-  }
+  },
+  animateReset() {
+    let opacity = this.state.resetOpacity;
+    opacity.setValue(.5); // half transparent, half opaque
+    Animated.timing(opacity, {
+      toValue: 1, // fully opaque
+      duration: 250, // milliseconds
+    }).start();
+  },
 });
 
 var styles = StyleSheet.create({
@@ -240,6 +271,14 @@ var styles = StyleSheet.create({
     fontSize: LETTER_SIZE,
     backgroundColor: 'transparent',
   },
+  reset: {
+    width: width * .2,
+    height: CELL_SIZE,
+    borderRadius: BORDER_RADIUS,
+    backgroundColor: '#517664',
+    alignItems: 'center',
+    justifyContent: 'center'
+  }
 });
 
 module.exports = BoardView;
