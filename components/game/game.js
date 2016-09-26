@@ -48,8 +48,6 @@ const Game = React.createClass({
     this.changeState();
   },
   newGame() {
-    this.state.gameProperties.goalNum = 15;
-    this.state.gameProperties.goalSwipes = 2;
     this.state.gameProperties.score = 0;
     this.state.gameProperties.currentOperator = '+';
     this.changeState();
